@@ -27,8 +27,7 @@ jobs:
         with:
           username: ${{ secrets.JFROG_USER_WRITER }}
           password: ${{ secrets.JFROG_PASSWORD_WRITER }}
-      - name: Build and push
-       - name: Step 1 - Checkout dev branch from GitHub 
+      - name: Checkout dev branch from GitHub 
         uses: actions/checkout@v2
       
       - name: Step 2 - Gradle wrapper version validation
