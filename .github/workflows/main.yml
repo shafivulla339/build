@@ -1,13 +1,34 @@
+name: Automated Versioning
 on:
   push:
     branches:
-      - main    
+      - main
 jobs:
-    #This workflow contains a single job called "ci" 
-  ci:
-    runs-on: [self-hosted, linux, X64, research]
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Step 1 - Checkout dev branch from GitHub 
+      - name: Checkout 
+        uses: actions/checkout@v2
+        with:
+          # Fetch all commits
+          fetch-depth: 0
+
+      - name: Semantic versioning
+        id: versioning
+        uses: PaulHatch/semantic-version@v4.0.2
+        with:
+          branch: main
+          tag_prefix: "v"
+          major_pattern: "BREAKING CHANGE:"
+          minor_pattern: "feat:"
+          format: "v${major}.${minor}.${patch}-prerelease${increment}"
+      - name: Login to JFrog   
+        uses: jfrog/setup-jfrog-cli@v1
+        with:
+          username: ${{ secrets.JFROG_USER_WRITER }}
+          password: ${{ secrets.JFROG_PASSWORD_WRITER }}
+      - name: Build and push
+       - name: Step 1 - Checkout dev branch from GitHub 
         uses: actions/checkout@v2
       
       - name: Step 2 - Gradle wrapper version validation
@@ -24,11 +45,17 @@ jobs:
         uses: gradle/gradle-build-action@v2.1.1
         with:
           arguments: build
-          
-      - name: Step5 - Listing the build file name
-        run: |
-          ls '${{ github.workspace }}'/build/libs
-          
-      - name: Step6 - Execute of jar file
-        run:
-          java -cp '${{ github.workspace }}'/build/libs/gradle-github-actions-example.jar com.philips.Application
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: Build imaage:latest
+      - name: Create Release
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          tag_name: ${{ steps.versioning.outputs.version }}
+          release_name: ${{ steps.versioning.outputs.version }}
+          prerelease: true
