@@ -22,4 +22,3 @@ jobs:
           major_pattern: "BREAKING CHANGE:"
           minor_pattern: "feat:"
           format: "v${major}.${minor}.${patch}-prerelease${increment}"
-      - name: Login to JFrog
