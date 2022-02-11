@@ -21,37 +21,6 @@ jobs:
           tag_prefix: "v"
           major_pattern: "BREAKING CHANGE:"
           minor_pattern: "feat:"
-          format: "v${major}.${minor}.${patch}-prerelease${increment}"
-      - name: Login to JFrog   
-        uses: jfrog/setup-jfrog-cli@v1
-        with:
-          username: ${{ secrets.JFROG_USER_WRITER }}
-          password: ${{ secrets.JFROG_PASSWORD_WRITER }}
-      - name: Checkout dev branch from GitHub 
-        uses: actions/checkout@v2
-      
-      - name: Step 2 - Gradle wrapper version validation
-        uses: gradle/wrapper-validation-action@v1
-      
-      - name: Step 3 - Use Java version 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: 17
-          distribution: 'adopt'
-          cache: gradle
-                  
-      - name: Step4 - Build with Gradle
-        uses: gradle/gradle-build-action@v2.1.1
-        with:
-          arguments: build
-          push: true
-          tags: Build imaage:latest
-      - name: Create Release
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-        with:
-          tag_name: ${{ steps.versioning.outputs.version }}
-          release_name: ${{ steps.versioning.outputs.version }}
-          prerelease: true
+          format: "v${major}.${minor}.${patch}-erelease${increment}"
+    
+    
