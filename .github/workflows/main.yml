@@ -1,13 +1,7 @@
 on:
-  #push:
-    #branches: [ branch-5106 ]   
-  pull_request:
+  push:
     branches:
-     - main
-     - develop
-     
-
-
+      - main    
 jobs:
     #This workflow contains a single job called "ci" 
   ci:
